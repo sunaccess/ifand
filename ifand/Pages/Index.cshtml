@@ -1,0 +1,98 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "在线代码编辑";
+}
+
+<div class="text-center">
+    @*<div data-role="navbar">
+        <ul>
+        <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="home">首页</a></li>
+        <li><a href="#pagetwo" data-icon="arrow-r">页面二</a></li>
+        </ul>
+        </div>
+        <p>一些文本..</p>
+        <a href="#">标准文本链接</a>
+        <a href="#" class="ui-btn">链接按钮</a>
+        <p>列表:</p>
+        <ul data-role="listview" data-autodividers="true" data-inset="true">
+        <li><a href="#">Adele</a></li>
+        <li><a href="#">Billy</a></li>
+        </ul>
+        <label for="fullname">输入框:</label>
+        <input type="text" name="fullname" id="fullname" placeholder="名字..">
+        <label for="switch">切换开关:</label>
+        <select name="switch" id="switch" data-role="slider">
+        <option value="on">On</option>
+        <option value="off" selected>Off</option>
+        </select>*@
+
+    <button id='bt_run' onclick="addIframe()">运行（R)</button>
+
+    <fieldset class="ui-grid-a">
+        <div class="ui-block-a"><div id="editcode" style="width: 800px; height: 800px; border: 1px solid grey"></div></div>
+        <div class="ui-block-b">
+            <div id="iframe">
+                <div id="iframewrapper">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script>
+
+    let code;
+    var editor;
+    let framename = "iframe_test";
+    window.onload=function () 
+    {
+        code= window.localStorage["editcode"]
+        if(code==null) code= '<HTML>this is test </HTML>';
+        require.config({ paths: { vs: '../lib/monaco-editor/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editcode'), {
+                //value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+                value: code,
+                // language: 'javascript',
+                language: 'html',
+                theme: 'vs-dark'
+            });
+        });
+    }
+
+        var i = 0;    
+        var editorArray = [];
+        function addIframe() {
+             //let editor = editorlist["editcode"];
+           
+            if (editor == null) { console.error("编辑器没有初始化！"); return; }
+            let curr_frame = document.getElementById(framename);
+            var If = curr_frame != null ? curr_frame : document.createElement("iframe");
+            //var If = document.createElement("iframe");
+            If.style.height = "800px";
+            If.style.width = "100%";
+            If.id = framename;
+            If.name = framename;
+            //document.all("sp").innerHTML=document.all("sp").innerHTML+" <iframe id=iframe" +(++i)+ " src='' width=300 height=100> </iframe>";
+            if (curr_frame == null) document.all("iframewrapper").appendChild(If);//===========Dom API to add Iframe
+            var doc1 = window.frames[framename].document;
+            //doc1.write("");
+            doc1.close();
+           
+            //var aa = this.get(editorkey);
+            let editorArray = [];
+            editorArray.push(editor);
+
+            let code= editorArray[0].getValue();
+            //doc1.open();
+            
+            // 获取编辑器内容
+            debugger;
+            //editorArray.push(editor);
+            //code = editorArray[0].getValue();
+            doc1.write(code);
+            window.localStorage["editcode"] = code;
+            //window.localStorage[key]
+            //doc1.write(" <HTML>this is test </HTML>");
+        }
+</script>
